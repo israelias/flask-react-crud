@@ -1,6 +1,6 @@
 [submodule "backend"]
-	path = /backend
-	url = git@github.com:israelias/flask-react-crud/backend.git
+	path = backend
+	url = git:https://github.com/israelias/flask-react-crud/
 [submodule "frontend"]
-	path = /frontend
-	url = git@github.com:israelias/flask-react-crud/frontend.git
+	path = frontend
+	url = git:https://github.com/israelias/flask-react-crud/
