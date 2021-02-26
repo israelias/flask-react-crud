@@ -6,14 +6,14 @@ from bson import ObjectId
 
 # Instantiation
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost/pythonreact'
+app.config['MONGO_URI'] = 'mongodb://localhost/pythonreactdb'
 mongo = PyMongo(app)
 
 # Settings
 CORS(app)
 
 # Database
-db = mongo.db.pythonreact
+db = mongo.db.users
 
 # Routes
 @app.route('/users', methods=['POST'])
