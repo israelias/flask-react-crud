@@ -6,6 +6,8 @@ app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost/pythonreactdb'
 mongo = PyMongo(app)
 
+CORS(app)
+
 db = mongo.db.users
 
 
@@ -28,19 +30,32 @@ def getUsers():
             'email': doc['email'],
             'password': doc['password']
         })
-    return 'received'
+    return jsonify(users)
 
-@app.route('/users/<id>', methods=['GET'])
+@app.route('/user/<id>', methods=['GET'])
 def getUser(id):
-    return 'received'
+    user = db.find_one({'_id': ObjectId(id)})
+    print(user)
+    return jsonify({
+        '_id': str(ObjectId(user['_id'])),
+        'name': user['name'],
+        'email': user['email'],
+        'password': user['password']
+    })
 
 @app.route('/users/<id>', methods=['DELETE'])
-def deleteUser():
-    return 'received'
+def deleteUser(id):
+    db.delete_one({'_id': ObjectId(id)})
+    return jsonify({'msg': 'User deleted'})
 
 @app.route('/users/<id>', methods=['PUT'])
-def updateUser():
-    return 'received'
+def updateUser(id):
+    db.update_one({'_id': ObjectId(id)}, {'$set': {
+        'name': request.json['name'],
+        'email': request.json['email'],
+        'password': request.json['password']
+    }})
+    return jsonify({'msg': 'User Updated'})
 
 
 if __name__ == '__main__':
