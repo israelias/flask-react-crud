@@ -7,23 +7,52 @@ const Users = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const [editing, setEditing] = useState(false);
+
+    const [id, setId] = useState('');
+
+    const nameInput = useRef(null);
+
     const [users, setUsers] = useState([])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await fetch(`${API}/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password
+        if (!editing) {
+            const res = await fetch(`${API}/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password
+                })
             })
-        })
-        const data = await res.json();
-        console.log(data)
+            const data = await res.json();
+            console.log(data)
+        } else {
+            const res = await fetch(`${API}/users/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password
+                })
+            });
+            const data = await res.json();
+            console.log(data)
+            setEditing(false);
+            setId('');
+        }
+        await getUsers()
+
+        setName('');
+        setEmail('');
+        setPassword('');
     }
 
     const getUsers = async () => {
@@ -33,22 +62,36 @@ const Users = () => {
         console.log(data)
     }
 
+    const deleteUser = async (id) => {
+        const userResponse = window.confirm('Are you sure you want to delete it?')
+        if (userResponse) {
+            const res = await fetch(`${API}/users/${id}`, {
+                method: 'DELETE'
+            })
+            const data = await res.json();
+            console.log(data)
+            await getUsers();
+        }
+    }
+
+    const editUser = async (id) => {
+        const res = await fetch(`${API}/users/${id}`)
+        const data = await res.json();
+
+        console.log(data)
+        setEditing(true);
+
+        setId(id)
+
+        setName(data.name);
+        setEmail(data.email);
+        setPassword(data.password);
+        nameInput.current.focus();
+    }
+
     useEffect(() => {
         getUsers();
     }, [])
-
-    const deleteUser = async (id) => {
-        const res = await fetch(`${API}/users/${id}`, {
-            method: 'DELETE'
-        })
-        const data = await res.json();
-        console.log(data)
-        await getUsers();
-    }
-
-    const editUser = (id) => {
-        console.log(id)
-    }
 
     return (
         <div className="row">
@@ -64,6 +107,7 @@ const Users = () => {
                             value={name}
                             className="form-control"
                             placeholder="Name"
+                            ref={nameInput}
                             autoFocus
                         />
                     </div>
@@ -86,10 +130,9 @@ const Users = () => {
                         />
                     </div>
                     <button className="btn btn-primary btn-block">
-                        Create
+                        {editing ? "Update" : "Create"}
                     </button>
                 </form>
-
             </div>
             <div className="col-md-6">
                 <table className="table table-striped">
@@ -104,9 +147,9 @@ const Users = () => {
                     <tbody>
                     {users.map(user => (
                         <tr key={user._id}>
-                            <td>${user.name}</td>
-                            <td>${user.email}</td>
-                            <td>${user.password}</td>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.password}</td>
                             <td>
                                 <button
                                     className="btn btn-secondary btn-sm btn-block"
@@ -125,10 +168,7 @@ const Users = () => {
                     ))}
                     </tbody>
                 </table>
-
-
             </div>
-
         </div>
     )
 }
