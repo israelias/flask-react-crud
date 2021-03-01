@@ -70,5 +70,8 @@ def updateUser(id):
     return jsonify({'message': 'User Updated'})
 
 
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0', threaded=True, port=5000)
