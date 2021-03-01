@@ -15,16 +15,17 @@ CORS(app)
 # Database
 db = mongo.db.users
 
+
 # Routes
 @app.route('/users', methods=['POST'])
 def createUser():
-  print(request.json)
-  id = db.insert({
-    'name': request.json['name'],
-    'email': request.json['email'],
-    'password': request.json['password']
-  })
-  return jsonify(str(ObjectId(id)))
+    print(request.json)
+    id = db.insert({
+        'name': request.json['name'],
+        'email': request.json['email'],
+        'password': request.json['password']
+    })
+    return jsonify(str(ObjectId(id)))
 
 
 @app.route('/users', methods=['GET'])
@@ -39,32 +40,35 @@ def getUsers():
         })
     return jsonify(users)
 
+
 @app.route('/users/<id>', methods=['GET'])
 def getUser(id):
-  user = db.find_one({'_id': ObjectId(id)})
-  print(user)
-  return jsonify({
-      '_id': str(ObjectId(user['_id'])),
-      'name': user['name'],
-      'email': user['email'],
-      'password': user['password']
-  })
+    user = db.find_one({'_id': ObjectId(id)})
+    print(user)
+    return jsonify({
+        '_id': str(ObjectId(user['_id'])),
+        'name': user['name'],
+        'email': user['email'],
+        'password': user['password']
+    })
 
 
 @app.route('/users/<id>', methods=['DELETE'])
 def deleteUser(id):
-  db.delete_one({'_id': ObjectId(id)})
-  return jsonify({'message': 'User Deleted'})
+    db.delete_one({'_id': ObjectId(id)})
+    return jsonify({'message': 'User Deleted'})
+
 
 @app.route('/users/<id>', methods=['PUT'])
 def updateUser(id):
-  print(request.json)
-  db.update_one({'_id': ObjectId(id)}, {"$set": {
-    'name': request.json['name'],
-    'email': request.json['email'],
-    'password': request.json['password']
-  }})
-  return jsonify({'message': 'User Updated'})
+    print(request.json)
+    db.update_one({'_id': ObjectId(id)}, {"$set": {
+        'name': request.json['name'],
+        'email': request.json['email'],
+        'password': request.json['password']
+    }})
+    return jsonify({'message': 'User Updated'})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
